@@ -2,49 +2,58 @@ package com.stefanini.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
+import java.util.Set;
+/**
+ * @author samukaAlves00
+ *
+ */
 @Entity
 @Table(name = "TB_PERFIL")
 public class Perfil implements Serializable {
+   
     /**
-     *
+	 * Serializacao da Classe
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+     * ID da Tabela
      */
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "co_seq_perfil")
+    @Column(name = "CO_SEQ_PERFIL")
     private Long id;
     /**
      *
      */
     @NotNull
-    @Column(name = "no_perfil")
+    @Column(name = "NO_PERFIL")
     private String nome;
     /**
      *
      */
     @NotNull
-    @Column(name = "ds_perfil")
+    @Column(name = "DS_PERFIL")
     private String descricao;
     /**
      *
      */
-    @Column(name = "dt_hora_inclusao")
+    @Column(name = "DT_HORA_INCLUSAO")
     @NotNull
     private LocalDateTime dataHoraInclusao;
     /**
      *
      */
-    @Column(name = "dt_hora_alteracao")
+    @Column(name = "DT_HORA_ALTERACAO")
     private LocalDateTime dataHoraAlteracao;
-
-//    /**
-//     * Mapeamento de Pessoa
-//     */
-//    @ManyToMany(mappedBy = "perfils")
-//    private Set<Pessoa> pessoas;
-
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "perfil",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    private Set<PessoaPerfil> pessoaPerfils;
 
     public Perfil() {
     }
@@ -54,16 +63,7 @@ public class Perfil implements Serializable {
         this.descricao = descricao;
         this.dataHoraInclusao = dataHoraInclusao;
         this.dataHoraAlteracao = dataHoraAlteracao;
-//        this.pessoas = pessoas;
     }
-
-//    public Set<Pessoa> getPessoas() {
-//        return pessoas;
-//    }
-//
-//    public void setPessoas(Set<Pessoa> pessoas) {
-//        this.pessoas = pessoas;
-//    }
 
     public Long getId() {
         return id;
@@ -106,6 +106,31 @@ public class Perfil implements Serializable {
     }
 
     @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Perfil other = (Perfil) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	@Override
     public String toString() {
         return "Perfil{" +
                 "id=" + id +
@@ -113,7 +138,6 @@ public class Perfil implements Serializable {
                 ", descricao='" + descricao + '\'' +
                 ", dataHoraInclusao=" + dataHoraInclusao +
                 ", dataHoraAlteracao=" + dataHoraAlteracao +
-//                ", pessoas=" + pessoas +
                 '}';
     }
 }

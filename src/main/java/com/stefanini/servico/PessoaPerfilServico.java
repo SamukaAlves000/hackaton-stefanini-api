@@ -12,65 +12,47 @@ import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
-import com.stefanini.dao.PessoaDao;
-import com.stefanini.model.Pessoa;
+import com.stefanini.dao.PessoaPerfilDao;
+import com.stefanini.model.PessoaPerfil;
 
 /**
  * 
  * Classe de servico, as regras de negocio devem estar nessa classe
- * 
- * @author joaopedromilhome
+ * @author samukaAlves007
  *
  */
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class PessoaServico implements Serializable {
-
+public class PessoaPerfilServico implements Serializable{
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	@Inject
-	private PessoaDao dao;
+	private PessoaPerfilDao dao;
 
-	/**
-	 * Salvar os dados de uma Pessoa
-	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public Pessoa salvar(@Valid Pessoa pessoa) {
-		return dao.salvar(pessoa);
+	public PessoaPerfil salvar(@Valid PessoaPerfil entity) {
+		return dao.salvar(entity);
 	}
 
-	/**
-	 * Atualizar o dados de uma pessoa
-	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public Pessoa atualizar(@Valid Pessoa entity) {
+	public PessoaPerfil atualizar(@Valid PessoaPerfil entity) {
 		return dao.atualizar(entity);
 	}
 
-	/**
-	 * Remover uma pessoa pelo id
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	public void remover(@Valid Long id) {
-		System.out.println("Identificador:"+id);
-		dao.remover(id);
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void remover(Long id) {
+	dao.remover(id);
 	}
 
-	/**
-	 * Buscar uma lista de Pessoa
-	 */
-	public Optional<List<Pessoa>> getList() {
+	public Optional<List<PessoaPerfil>> getList() {
 		return dao.getList();
 	}
-
-	/**
-	 * Buscar uma Pessoa pelo ID
-	 */
-	public Optional<Pessoa> encontrar(Long id) {
+	
+	public Optional<PessoaPerfil> encontrar(Long id) {
 		return dao.encontrar(id);
 	}
-
 }

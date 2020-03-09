@@ -11,18 +11,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author joaopedromilhome
@@ -30,19 +23,19 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @Entity
 @Table(name = "TB_PESSOA")
-@NamedQueries(value = {
-		@NamedQuery(name = "Pessoa.findByNome",
-				query = "select p from Pessoa p where p.nome=:nome"),
-		@NamedQuery(name = "Pessoa.findPerfilsAndEnderecosByNome",
-				query = "select  p from Pessoa p  JOIN FETCH p.perfils JOIN FETCH p.enderecos  where p.nome=:nome")
-})
+//@NamedQueries(value = {
+	//	@NamedQuery(name = "Pessoa.findByNome",
+	//			query = "select p from Pessoa p where p.nome=:nome"),
+	//	@NamedQuery(name = "Pessoa.findPerfilsAndEnderecosByNome",
+		//		query = "select  p from Pessoa p  JOIN FETCH p.perfils JOIN FETCH p.enderecos  where p.nome=:nome")
+//})
 public class Pessoa implements Serializable{
-
 	
 	/**
 	 * Serializacao da Classe
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * ID da Tabela
 	 */
@@ -50,6 +43,7 @@ public class Pessoa implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CO_SEQ_PESSOA")
 	private Long id;
+	
 	/**
 	 * Nome da pessoa
 	 */
@@ -63,12 +57,14 @@ public class Pessoa implements Serializable{
 	@NotNull
 	@Column(name = "DS_EMAIL")
 	private String email;
+	
 	/**
 	 * Data de Nascimento 
 	 */
 	@NotNull
 	@Column(name = "DT_NASCIMENTO")
 	private LocalDate dataNascimento; 
+	
 	/**
 	 * Situacao da Pessoa
 	 */
@@ -80,36 +76,18 @@ public class Pessoa implements Serializable{
 	 * Mapeamento de Enderecos Unidirecional
 	 */
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "CO_SEQ_PESSOA",referencedColumnName = "CO_SEQ_PESSOA")
+	@OneToMany(mappedBy = "pessoa",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
 	private Set<Endereco> enderecos;
+	
+	@OneToMany(mappedBy = "pessoa",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    private Set<PessoaPerfil> pessoaPerfils;
 
-	/**
-	 * Mapeamento de Perfis Unidirecional
-	 */
-	@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "TB_PESSOA_PERFIL",
-			joinColumns = {@JoinColumn(name = "CO_SEQ_PESSOA")},
-			inverseJoinColumns = {@JoinColumn(name = "CO_SEQ_PERFIL")}
-	)
-	private Set<Perfil> perfils;
 	/**
 	 * Metodo construtor da classe
 	 */
 	public Pessoa() {
 	}
-
-
-	public Set<Perfil> getPerfils() {
-		return perfils;
-	}
-
-	public void setPerfils(Set<Perfil> perfils) {
-		this.perfils = perfils;
-	}
-
+	
 	/**
 	 * Construtor da Classe, Obrigando receber todos os parametros
 	 * @param nome
@@ -125,7 +103,6 @@ public class Pessoa implements Serializable{
 		this.situacao = situacao;
 	}
 
-
 	public Set<Endereco> getEnderecos() {
 		return enderecos;
 	}
@@ -133,7 +110,6 @@ public class Pessoa implements Serializable{
 	public void setEnderecos(Set<Endereco> enderecos) {
 		this.enderecos = enderecos;
 	}
-
 
 	public Long getId() {
 		return id;
@@ -158,8 +134,6 @@ public class Pessoa implements Serializable{
 	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
-
-	
 
 	public String getEmail() {
 		return email;
@@ -206,14 +180,6 @@ public class Pessoa implements Serializable{
 	public String toString() {
 		return "Pessoa [id=" + id + ", nome=" + nome + ", email=" + email + ", dataNascimento=" + dataNascimento
 				+ ", situacao=" + situacao + "]";
-	}
-	
-	
-	
-	
-	
-	
-	
-	
+	}	
 
 }

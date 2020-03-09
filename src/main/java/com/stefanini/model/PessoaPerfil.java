@@ -2,21 +2,30 @@ package com.stefanini.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-
+/**
+ * @author samukaAlves00
+ *
+ */
 @Entity
-@Table(name = "tb_pessoa_perfil")
+@Table(name = "TB_PESSOA_PERFIL")
 public class PessoaPerfil implements Serializable {
 
 
-    @Id
-    @Column(name = "co_seq_pessoal_perfil")
+    /**
+	 * Serializacao da Classe
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CO_SEQ_PESSOA_PERFIL")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "co_seq_perfil", referencedColumnName = "co_seq_perfil", nullable = false)
+    @ManyToOne(cascade= {CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinColumn(name = "CO_SEQ_PERFIL", referencedColumnName = "CO_SEQ_PERFIL", nullable = false)
     private Perfil perfil;
-    @ManyToOne
-    @JoinColumn(name = "co_seq_pessoa", referencedColumnName = "co_seq_pessoa", nullable = false)
+    @ManyToOne(cascade= {CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinColumn(name = "CO_SEQ_PESSOA", referencedColumnName = "CO_SEQ_PESSOA", nullable = false)
     private Pessoa pessoa;
 
     public PessoaPerfil() {

@@ -1,14 +1,15 @@
 package com.stefanini.model;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
+import java.io.Serializable;
+/**
+ * @author samukaAlves00
+ *
+ */
 @Entity
 @Table(name = "tb_endereco")
 public class Endereco implements Serializable {
-
-
-
     /**
      * Serializacao da Classe
      */
@@ -38,17 +39,10 @@ public class Endereco implements Serializable {
 
     @Column(name = "DS_LOGRADOURO")
     private String logradouro;
-    /**
-     * Unidirecional
-     * Somente Pessoa acessa endereco
-     */
-    @Column(name = "CO_SEQ_PESSOA")
-    private Long idPessoa;
-
-//    @ManyToOne
-//    @JoinColumn(name = "co_seq_pessoa", referencedColumnName = "co_seq_pessoa", nullable = false)
-//    private Pessoa pessoa;
-
+   
+    @ManyToOne(cascade= {CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinColumn(name = "CO_SEQ_PESSOA", referencedColumnName = "CO_SEQ_PESSOA", nullable = false)
+    private Pessoa pessoa;
 
     public Endereco() {
     }
@@ -109,15 +103,41 @@ public class Endereco implements Serializable {
         this.logradouro = logradouro;
     }
 
-    public Long getIdPessoa() {
-        return idPessoa;
-    }
+    
+    public Pessoa getPessoa() {
+		return pessoa;
+	}
 
-    public void setIdPessoa(Long idPessoa) {
-        this.idPessoa = idPessoa;
-    }
-
+	public void setPessoa(Pessoa pessoa) {
+		this.pessoa = pessoa;
+	}
+	
     @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Endereco other = (Endereco) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	@Override
     public String toString() {
         return "Endereco{" +
                 "id=" + id +
@@ -127,7 +147,7 @@ public class Endereco implements Serializable {
                 ", bairro='" + bairro + '\'' +
                 ", complemento='" + complemento + '\'' +
                 ", logradouro='" + logradouro + '\'' +
-                ", idPessoa=" + idPessoa +
+                ", pessoa=" + pessoa +
                 '}';
     }
 }
