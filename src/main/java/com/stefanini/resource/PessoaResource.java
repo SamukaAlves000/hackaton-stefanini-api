@@ -25,19 +25,42 @@ public class PessoaResource extends ApplicationResource{
 	private PessoaServico pessoaServico;
 
 	@GET
-	public Response obterListaPessoa() {
+	public Response findAll() {
 		return Response.ok(pessoaServico.getList().get()).build();
 	}
 	
 	@GET
 	@Path("{id}")
-	public Response obterPessoa(@PathParam("id") Long id) {
-//		return Response.status(Status.INTERNAL_SERVER_ERROR).entity("deu ruim").build();
+	public Response findById(@PathParam("id") Long id) {
 		return Response.ok(pessoaServico.encontrar(id).get()).build();
+	}
+	
+	@GET
+	@Path("uf/{uf}")
+	public Response findAllByUf(@PathParam("uf") String uf) {
+		return Response.ok(pessoaServico.encontrarPessoasPorUf(uf)).build();
+	}
+	
+	@GET
+	@Path("situacao/{situacao}")
+	public Response findAllBySituacao(@PathParam("situacao") boolean situacao) {
+		return Response.ok(pessoaServico.encontrarPessoasPorSituacao(situacao)).build();
+	}
+	
+	@GET
+	@Path("endereco/{contem}")
+	public Response findAllByEnderecoContem(@PathParam("contem") boolean contem) {
+		return Response.ok(pessoaServico.encontrarPessoasContemNaoContemEndereco(contem)).build();
+	}
+	
+	@GET
+	@Path("perfil")
+	public Response findAllByPerfilContem() {
+		return Response.ok(pessoaServico.encontrarPessoasContemPerfil()).build();
 	}
 
 	@POST
-	public Response obterListaPessoa(@Valid Pessoa pessoa) {
+	public Response save(@Valid Pessoa pessoa) {
 		return Response.ok(pessoaServico.salvar(pessoa)).build();
 	}
 	

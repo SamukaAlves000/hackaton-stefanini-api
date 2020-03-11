@@ -15,13 +15,16 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
 import com.stefanini.dao.PessoaDao;
 import com.stefanini.model.Endereco;
+import com.stefanini.model.Perfil;
 import com.stefanini.model.Pessoa;
+import com.stefanini.model.PessoaPerfil;
 
 /**
  * 
@@ -84,7 +87,7 @@ public class PessoaServico implements Serializable {
 	/**
 	 * Buscar pessoas por situacao 
 	 */
-	public List<Pessoa> encontrar(boolean situacao) {
+	public List<Pessoa> encontrarPessoasPorSituacao(boolean situacao) {
 		
 		CriteriaBuilder builder = dao.getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<Pessoa> criteria = builder.createQuery(Pessoa.class);
@@ -100,7 +103,7 @@ public class PessoaServico implements Serializable {
 	/**
 	 * Buscar pessoas de determinada UF
 	 */
-	public List<Pessoa> encontrar(String uf) {
+	public List<Pessoa> encontrarPessoasPorUf(String uf) {
 		
 		CriteriaBuilder builder = dao.getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<Pessoa> criteria = builder.createQuery(Pessoa.class);
@@ -122,5 +125,58 @@ public class PessoaServico implements Serializable {
 		return query.getResultList();
 		
 	}
+	
+	
+	/**
+	 * Buscar pessoas que contém / Não contém endereço
+	 */
+	public List<Pessoa> encontrarPessoasContemNaoContemEndereco(boolean contem) {
+		
+		CriteriaBuilder builder = dao.getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Pessoa> criteria = builder.createQuery(Pessoa.class);
+		Root<Pessoa> root = criteria.from(Pessoa.class);
+		
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		Join<Pessoa, Endereco> join = root.join("enderecos",JoinType.LEFT);
+		
+		if(!contem) {
+		
+			Predicate predEnd = criteria.where(join.get("id").isNull()).getRestriction();
+			predicateList.add(predEnd);
+			
+			Predicate[] predicates = new Predicate[predicateList.size()];
+			predicateList.toArray(predicates);
+			criteria.where(predicates);
+			
+		}
+		
+		TypedQuery<Pessoa> query = dao.getEntityManager().createQuery(criteria);
+		
+		return query.getResultList();
+		
+	}
+	
+	
+	/**
+	 * Buscar pessoas que contém perfil
+	 */
+	public List<Pessoa> encontrarPessoasContemPerfil() {
+		
+		CriteriaBuilder builder = dao.getEntityManager().getCriteriaBuilder();
+		CriteriaQuery<Pessoa> criteria = builder.createQuery(Pessoa.class);
+		Root<Pessoa> root = criteria.from(Pessoa.class);
+		
+		Join<Pessoa, PessoaPerfil> joinPesPesPer = root.join("pessoaPerfils",JoinType.INNER);
+		Join<PessoaPerfil,Perfil> joinPerPesPer = joinPesPesPer.join("perfil",JoinType.INNER);
+		
+		TypedQuery<Pessoa> query = dao.getEntityManager().createQuery(criteria);
+		
+		return query.getResultList();
+		
+	}
+	
+	
+	
 
 }
