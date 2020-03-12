@@ -61,6 +61,7 @@ public class Pessoa implements Serializable{
 	/**
 	 * Data de Nascimento 
 	 */
+	@JsonIgnore
 	@NotNull
 	@Column(name = "DT_NASCIMENTO")
 	private LocalDate dataNascimento; 
@@ -68,6 +69,7 @@ public class Pessoa implements Serializable{
 	/**
 	 * Situacao da Pessoa
 	 */
+	@JsonIgnore
 	@NotNull
 	@Column(name = "ST_PESSOA")
 	private Boolean situacao;

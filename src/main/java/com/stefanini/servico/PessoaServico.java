@@ -157,7 +157,6 @@ public class PessoaServico implements Serializable {
 		
 	}
 	
-	
 	/**
 	 * Buscar pessoas que contém perfil
 	 */
@@ -175,8 +174,4 @@ public class PessoaServico implements Serializable {
 		return query.getResultList();
 		
 	}
-	
-	
-	
-
 }
