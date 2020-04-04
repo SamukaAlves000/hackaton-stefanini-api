@@ -1,7 +1,10 @@
 package com.stefanini.resource;
 
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -12,47 +15,132 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import com.stefanini.model.Endereco;
+import com.stefanini.model.viacep.ViaCEPEndereco;
 import com.stefanini.servico.EnderecoServico;
+import com.stefanini.servico.viacep.ViaCEPClient;
 
 @Path("enderecos")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class EnderecoResource extends ApplicationResource{
+public class EnderecoResource {
 
-	@Inject
-	private EnderecoServico enderecoServico;
+    private static Logger log = Logger.getLogger(EnderecoResource.class.getName());
 
-	@GET
-	public Response findAll() {
-		return Response.ok(enderecoServico.getList().get()).build();
-	}
+
+    /**
+     * Classe de servico da Pessoa
+     */
+    @Inject
+    private EnderecoServico enderecoServico;
+    /**
+     *
+     */
+    @Context
+    private UriInfo uriInfo;
+
+
+    /**
+     *
+     * @return
+     */
+    @GET
+    public Response obterEnderecos() {
+        log.info("Obtendo lista de pessoas");
+
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        Optional<List<Endereco>> listPessoa = enderecoServico.getList();
+        return listPessoa.map(enderecos -> Response.ok(enderecos).build()).orElseGet(() -> Response.status(Response.Status.NOT_FOUND).build());
+    }
+
+    /**
+     *
+     * @param endereco
+     * @return
+     */
+    @POST
+    public Response adicionarEndereco(@Valid Endereco endereco) {
+        return Response.ok(enderecoServico.salvar(endereco)).build();
+    }
+
+
+    /**
+     *
+     * @param endereco
+     * @return
+     */
+    @PUT
+    public Response atualizarEndereco(@Valid Endereco endereco) {
+        return Response.ok(enderecoServico.atualizar(endereco)).build();
+    }
+
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @DELETE
+    @Path("{id}")
+    public Response deletarEndereco(@PathParam("id") Long id) {
+        if(enderecoServico.encontrar(id).isPresent()){
+            enderecoServico.remover(id);
+            return Response.status(Response.Status.OK).build();
+        }else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("{id}")
+    public Response obterEndereco(@PathParam("id") Long id) {
+        return enderecoServico.encontrar(id).map(endereco -> Response.ok(endereco).build()).orElseGet(() -> Response.status(Response.Status.NOT_FOUND).build());
+    }
+    
+    
+    /**
+    *
+    * @param id
+    * @return
+    */
+   @GET
+   @Path("cep/{cep}")
+   public Response obterEnderecoViaCep(@PathParam("cep") String cep) {
+	   
+	   ViaCEPClient client = new ViaCEPClient();
+	   ViaCEPEndereco endereco;
+	   Endereco result = new Endereco();
+	try {
+		
+		endereco = client.getEndereco(cep);
+		
+		if(endereco!= null) {
+		result.setBairro(endereco.getBairro());
+		result.setCep(endereco.getCep());
+		result.setComplemento(endereco.getComplemento());
+		result.setLocalidade(endereco.getLocalidade());
+		result.setLogradouro(endereco.getLogradouro());
+		result.setUf(endereco.getUf());
+		}
+		return Response.ok(result).build();
+		
+	} catch (IOException e) {
+		
+		 return Response.status(Response.Status.NOT_FOUND).build();
+	}	
 	
-	@GET
-	@Path("{id}")
-	public Response findById(@PathParam("id") Long id) {
-//		return Response.status(Status.INTERNAL_SERVER_ERROR).entity("deu ruim").build();
-		return Response.ok(enderecoServico.encontrar(id).get()).build();
-	}
-	
-	@POST
-	public Response save(@Valid Endereco endereco) {
-		return Response.ok(enderecoServico.salvar(endereco)).build();
-	}
-	
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@PUT
-	public Response update(@Valid Endereco endereco) {
-		return Response.ok(enderecoServico.atualizar(endereco)).build();
-	}
-	
-	@DELETE
-	@Path("{id}")
-	public Response delete(@PathParam("id") Long id) {
-		enderecoServico.remover(id);
-		return Response.ok().build();
-	}
+   }
+
 }

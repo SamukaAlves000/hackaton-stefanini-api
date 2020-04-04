@@ -1,16 +1,16 @@
 package com.stefanini.dao.abstracao;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
+
+import com.stefanini.dao.interfaces.IGenericDao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.validation.Valid;
-
-import com.stefanini.util.IGenericService;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author joaopedromilhome
@@ -18,8 +18,7 @@ import com.stefanini.util.IGenericService;
  * @param <T>
  * @param <I>
  */
-public abstract class GenericDao<T, I extends Serializable> implements IGenericService<T, I>{
-
+public abstract class GenericDao<T, I extends Serializable> implements IGenericDao<T, I> {
 
 
 	@PersistenceContext(unitName="jpa")
@@ -60,7 +59,6 @@ public abstract class GenericDao<T, I extends Serializable> implements IGenericS
 	 * Sempre que for executar uma DML é necessario abrir uma transacao e fecha-la, pois senão a operacao não será comitada
 	 */
 	public void remover(I id) {
-		System.out.println("Chegou!");
 		T entity = encontrar(id).get();
 		getEntityManager().remove(entity);
 	}

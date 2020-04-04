@@ -1,59 +1,93 @@
 package com.stefanini.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
-/**
- * @author samukaAlves00
- *
- */
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
 @Entity
-@Table(name = "TB_PESSOA_PERFIL")
+@Table(name = "tb_pessoa_perfil")
 public class PessoaPerfil implements Serializable {
 
-
-    /**
-	 * Serializacao da Classe
+	/**
+	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CO_SEQ_PESSOA_PERFIL")
-    private Long id;
+	@Column(name = "co_seq_pessoal_perfil")
+	private Long id;
 
-    @ManyToOne(cascade= {CascadeType.MERGE,CascadeType.PERSIST})
-    @JoinColumn(name = "CO_SEQ_PERFIL", referencedColumnName = "CO_SEQ_PERFIL", nullable = false)
-    private Perfil perfil;
-    @ManyToOne(cascade= {CascadeType.MERGE,CascadeType.PERSIST})
-    @JoinColumn(name = "CO_SEQ_PESSOA", referencedColumnName = "CO_SEQ_PESSOA", nullable = false)
-    private Pessoa pessoa;
+	@JsonIgnore
+	@Column(name = "co_seq_perfil", insertable = false, updatable = false)
+	private Long idPerfil;
+	@JsonIgnore
+	@Column(name = "co_seq_pessoa", insertable = false, updatable = false)
+	private Long idPessoa;
 
-    public PessoaPerfil() {
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "co_seq_perfil", referencedColumnName = "co_seq_perfil", nullable = false)
+	private Perfil perfil;
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "co_seq_pessoa", referencedColumnName = "co_seq_pessoa", nullable = false)
+	private Pessoa pessoa;
+
+	public PessoaPerfil() {
 		// TODO Auto-generated constructor stub
 	}
 
-    public PessoaPerfil(Perfil perfil, Pessoa pessoa) {
-        this.perfil = perfil;
-        this.pessoa = pessoa;
-    }
+	public PessoaPerfil(Perfil perfil, Pessoa pessoa) {
 
-    public void setPessoa(Pessoa pessoa) {
-        this.pessoa = pessoa;
-    }
+		this.perfil = perfil;
+		this.pessoa = pessoa;
+	}
 
-    public Perfil getPerfil() {
-        return perfil;
-    }
+	public Long getIdPerfil() {
+		return idPerfil;
+	}
 
-    public Pessoa getPessoa() {
-        return pessoa;
-    }
+	public void setIdPerfil(Long idPerfil) {
+		this.idPerfil = idPerfil;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getIdPessoa() {
+		return idPessoa;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setIdPessoa(Long idPessoa) {
+		this.idPessoa = idPessoa;
+	}
+
+	public void setPerfil(Perfil perfil) {
+		this.perfil = perfil;
+	}
+
+	public void setPessoa(Pessoa pessoa) {
+		this.pessoa = pessoa;
+	}
+
+	public Perfil getPerfil() {
+		return perfil;
+	}
+
+	public Pessoa getPessoa() {
+		return pessoa;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 }
